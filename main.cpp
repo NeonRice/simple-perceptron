@@ -11,7 +11,7 @@ double get_random(const double &from, const double &to) {
   return dist(gen);
 }
 
-void initialize_weights(std::array<double, 3> *weights) {
+void initialize_weights(Eigen::VectorXd *weights) {
   std::mt19937 gen(time(NULL));
   std::uniform_real_distribution<double> dist(-3, 3);
   for (double &weight : *weights) {
@@ -28,13 +28,12 @@ double sigmoid(const double &x) { return 1 / (1 + exp(-x)); }
 // Heaviside function
 double heaviside(const double &x) { return x > 0; }
 
-bool random_fit(std::array<double, 3> *weights, Perceptron *perceptron,
-                const std::vector<std::array<double, 2>> &input,
-                const std::vector<int> &output, const double &learning_rate,
+bool random_fit(Eigen::VectorXd *weights, Perceptron *perceptron,
+                const training_data &training_set, const double &learning_rate,
                 const ulong &epochs, ulong &iterations) {
   std::mt19937 gen(time(NULL));
   std::uniform_real_distribution<double> dist(-3, 3);
-  while (perceptron->predict(input) != output) {
+  while (perceptron->predict(training_set.first) != training_set.second) {
     if (++iterations != ULONG_MAX && epochs == iterations && epochs != 0) {
       // Training failed, not enough epochs?
       // If epochs = 0, never stop until weights found
@@ -47,13 +46,17 @@ bool random_fit(std::array<double, 3> *weights, Perceptron *perceptron,
   return true;
 }
 
+using Eigen::Matrix;
+
 int main(int argc, char **argv) {
-  std::vector<std::array<double, 2>> input = {
+  std::vector<Matrix<double, 1, 2>> input {
       {-0.3, 0.6}, {0.3, -0.6}, {1.2, -1.2}, {1.2, 1.2}};
   std::vector<int> output = {0, 0, 1, 1};
 
+  training_data training_set = training_data(input, output);
+
   Perceptron *p = new Perceptron(initialize_weights, sigmoid, random_fit);
-  std::pair<bool, ulong> results = p->train(input, output, 0);
+  std::pair<bool, ulong> results = p->train(training_set, 0);
   bool trained = results.first;
   if (trained) {
     std::cout << "Successfully trained perceptron on the given dataset:\n";
