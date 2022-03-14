@@ -25,6 +25,9 @@ int main(int argc, char **argv) {
     std::cout << du.first << " Label: " << du.second << std::endl;
   }
 
+  DynamicPerceptron test(init::initialize_weights, activate::sigmoid,
+                         fit::random_fit);
+
   //  constexpr uint k = 2;
   //  std::vector<Perceptron<k>::InputVector> input = {
   //      {-0.3, 0.6}, {0.3, -0.6}, {1.2, -1.2}, {1.2, 1.2}};
