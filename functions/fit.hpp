@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../perceptron/perceptron.hpp"
+#include "../perceptron/dynamic_perceptron.hpp"
+#include "../perceptron/static_perceptron.hpp"
 #include <random>
 
 namespace fit {
 
-template <unsigned int k>
-bool random_fit(typename Perceptron<k>::WeightVector *weights, Perceptron<k> *perceptron,
-                const typename Perceptron<k>::training_data &training_set,
+bool random_fit(DynamicPerceptron::WeightVector *weights,
+                DynamicPerceptron *perceptron,
+                DynamicPerceptron::training_data &training_set,
                 const double &learning_rate, const ulong &epochs,
                 ulong &iterations) {
   std::mt19937 gen(time(NULL));

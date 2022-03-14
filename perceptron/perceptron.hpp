@@ -4,17 +4,14 @@
 #include <array>
 #include <vector>
 
-template <unsigned int k> class Perceptron {
+template <typename WeightVector, typename InputVector> class Perceptron {
 public:
-  typedef Eigen::Matrix<double, 1, k + 1> WeightVector;
-  typedef Eigen::Matrix<double, 1, k> InputVector;
-
   typedef std::pair<std::vector<InputVector>, std::vector<int>> training_data;
   using init_fun = void (*)(WeightVector *weights);
 
   using active_fun = double (*)(const double &weighted_sum);
 
-  using fit_fun = bool (*)(WeightVector *weights, Perceptron<k> *perceptron,
+  using fit_fun = bool (*)(WeightVector *weights, Perceptron<WeightVector, InputVector> *perceptron,
                            const training_data &training_set,
                            const double &learning_rate, const ulong &epochs,
                            ulong &iterations);

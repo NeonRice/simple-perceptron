@@ -1,6 +1,7 @@
 #include "functions/activate.hpp"
 #include "functions/fit.hpp"
 #include "functions/init.hpp"
+#include "perceptron/dynamic_perceptron.hpp"
 #include "perceptron/perceptron.hpp"
 
 #include "util/get_data.hpp"
@@ -24,6 +25,9 @@ int main(int argc, char **argv) {
   for (auto du : data) {
     std::cout << du.first << " Label: " << du.second << std::endl;
   }
+  DynamicPerceptron *perceptron = new DynamicPerceptron(
+      init::initialize_weights<DynamicPerceptron::WeightVector>,
+       activate::sigmoid, fit::random_fit);
 
   //  constexpr uint k = 2;
   //  std::vector<Perceptron<k>::InputVector> input = {
