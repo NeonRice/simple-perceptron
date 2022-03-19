@@ -53,8 +53,8 @@ public:
   }
 
   std::pair<bool, ulong> train(const training_data &training_set,
-                                       const ulong &epochs = 250,
-                                       const double &learning_rate = 0.1) {
+                               const ulong &epochs = 250,
+                               const double &learning_rate = 0.1) {
     ulong iterations = 0;
     weights = WeightVector(training_set[0].first.size() + 1);
     this->initialization_function(&weights);
@@ -97,9 +97,7 @@ public:
   inline void set_init_function(init_fun fun) {
     this->initialization_function = fun;
   }
-  inline void set_fit_function(fit_fun fun) {
-    this->fitting_function = fun;
-  }
+  inline void set_fit_function(fit_fun fun) { this->fitting_function = fun; }
 
   inline WeightVector get_weights() { return weights; }
   inline WeightVector *set_weights(const WeightVector &weights) {
