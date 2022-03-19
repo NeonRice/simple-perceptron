@@ -1,6 +1,5 @@
 #pragma once
 
-#include "perceptron.hpp"
 #include <Eigen/Dense>
 #include <array>
 #include <vector>
@@ -77,4 +76,4 @@ public:
     init_fun initialization_function;
     active_fun activation_function;
     fit_fun fitting_function;
-  };
+};
