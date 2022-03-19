@@ -5,7 +5,8 @@
 #include <vector>
 
 namespace util {
-typedef std::vector<std::pair<Eigen::VectorXd, int>> training_data;
+typedef std::vector<std::pair<Eigen::Matrix<double, 1, Eigen::Dynamic>, int>>
+    training_data;
 
 std::vector<std::string> tokenize(const std::string &str,
                                   const char &delim = ',') {
@@ -56,7 +57,6 @@ training_data get_training_data(std::istream *stream, uint label_column = 0) {
           ". Previous amount of columns: " + std::to_string(previous_length) +
           ". Current line columns: " + std::to_string(tokens.size()));
     }
-
 
     for (uint i = 0; i < tokens.size(); ++i) {
       if (!is_number(tokens[i])) {

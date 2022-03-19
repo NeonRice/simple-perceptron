@@ -6,11 +6,12 @@
 
 namespace fit {
 
-bool random_fit(DynamicPerceptron::WeightVector *weights,
-                DynamicPerceptron *perceptron,
-                DynamicPerceptron::training_data &training_set,
-                const double &learning_rate, const ulong &epochs,
-                ulong &iterations) {
+template <typename PerceptronType>
+bool random_fit(
+    typename PerceptronType::WeightVector *weights, PerceptronType *perceptron,
+    const std::pair<std::vector<typename PerceptronType::InputVector>,
+                    std::vector<int>> &training_set,
+    const double &learning_rate, const ulong &epochs, ulong &iterations) {
   std::mt19937 gen(time(NULL));
   std::uniform_real_distribution<double> dist(-3, 3);
   while (perceptron->predict(training_set.first) != training_set.second) {

@@ -2,6 +2,7 @@
 #include "functions/fit.hpp"
 #include "functions/init.hpp"
 #include "perceptron/dynamic_perceptron.hpp"
+#include "perceptron/static_perceptron.hpp"
 #include "perceptron/perceptron.hpp"
 
 #include "util/get_data.hpp"
@@ -9,6 +10,8 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
+  argc = 2;
+  argv[1] = "test.data";
   std::istream *stream;
   if (argc == 2) {
     // File name provided
@@ -25,9 +28,26 @@ int main(int argc, char **argv) {
   for (auto du : data) {
     std::cout << du.first << " Label: " << du.second << std::endl;
   }
-  DynamicPerceptron *perceptron = new DynamicPerceptron(
+  // DynamicPerceptron *perceptron = new DynamicPerceptron(
+  //     init::initialize_weights<DynamicPerceptron::WeightVector>,
+  //     activate::sigmoid, fit::random_fit);
+  StaticPerceptron<3> *perceptron = new StaticPerceptron<3>(
       init::initialize_weights<DynamicPerceptron::WeightVector>,
-       activate::sigmoid, fit::random_fit);
+      activate::sigmoid, fit::random_fit);
+
+  //std::pair<bool, ulong> results = perceptron->train(data, 0);
+  //std::vector<int> predictions =
+  //    perceptron->predict(perceptron->transform_training_data(data).first);
+  //bool trained = results.first;
+  //if (trained) {
+  //  std::cout << "Trained model successfully!" << std::endl;
+  //  std::cout << "Weights are given:\n"
+  //            << perceptron->get_weights() << std::endl;
+  //  std::cout << "Predictions:\n";
+  //}
+  //for (auto prediction : predictions) {
+  //  std::cout << std::to_string(prediction) << std::endl;
+  //}
 
   //  constexpr uint k = 2;
   //  std::vector<Perceptron<k>::InputVector> input = {
