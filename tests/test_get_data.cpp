@@ -16,5 +16,9 @@ int main(int argc, char **argv) {
     throw std::invalid_argument("Provide path to test.data");
   }
   util::training_data data = util::get_training_data(stream);
+  // Label column is last
+  for (auto du : data) {
+    std::cout << du.first << " Label: " << du.second << std::endl;
+  }
   // TODO: Convert to GTEST and finish test (static asserts)
 }
