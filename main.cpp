@@ -8,7 +8,6 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  argc = 2;
   std::istream *stream;
   if (argc == 2) {
     // File name provided
@@ -29,7 +28,7 @@ int main(int argc, char **argv) {
       new Perceptron(init::initialize_weights<Perceptron::WeightVector>,
                      activate::sigmoid, fit::random_fit);
 
-  std::pair<bool, ulong> results = perceptron->train(data, 0);
+  std::pair<bool, ulong> results = perceptron->train_parallel(data, 0);
   std::vector<int> predictions =
       perceptron->predict(Perceptron::transform_training_data(data).first);
   bool trained = results.first;

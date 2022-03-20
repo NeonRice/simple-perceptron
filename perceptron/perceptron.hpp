@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <algorithm>
 #include <array>
+#include <omp.h>
 #include <vector>
 
 class Perceptron {
@@ -68,6 +70,45 @@ public:
       }
     }
     return std::pair<bool, ulong>(true, iterations);
+  }
+
+  // Simplistic parallelization, where the fitting function is run seperately
+  // per each available thread
+  std::pair<bool, ulong> train_parallel(const training_data &training_set,
+                                        const ulong &epochs = 250,
+                                        const double &learning_rate = 0.1) {
+    ulong iterations = 0;
+    weights = WeightVector(training_set[0].first.size() + 1);
+    bool trained = false;
+    std::vector<ulong> thread_iterations;
+#pragma omp parallel
+    {
+      thread_iterations.reserve(omp_get_num_threads());
+      uint thread_id = omp_get_thread_num();
+      bool failed = false;
+      auto training_weights = weights;
+      this->initialization_function(&training_weights);
+      while (!fitting_function(
+                 &training_weights, this, transform_training_data(training_set),
+                 learning_rate, epochs, thread_iterations[thread_id]) &&
+             !trained) {
+        if (++thread_iterations[thread_id] != ULONG_MAX &&
+            epochs == thread_iterations[thread_id] && epochs != 0) {
+          // Training failed, not enough epochs?
+          // If epochs = 0, never stop until weights found
+          failed = true;
+        }
+      }
+      if (!failed) {
+        trained = true;
+        iterations = thread_iterations[thread_id];
+      }
+    }
+    if (!trained) {
+      iterations = *(
+          std::max_element(thread_iterations.begin(), thread_iterations.end()));
+    }
+    return std::pair<bool, ulong>(trained, iterations);
   }
 
   std::vector<int> predict(const std::vector<WeightVector> &input) {
