@@ -13,7 +13,7 @@ public:
   typedef std::pair<std::vector<WeightVector>, std::vector<int>>
       transformed_training_data;
 
-  using init_fun = void (*)(WeightVector *weights);
+  using init_fun = void (*)(WeightVector *weights, const double &seed);
 
   using active_fun = double (*)(const double &weighted_sum);
 
@@ -59,7 +59,7 @@ public:
                                const double &learning_rate = 0.1) {
     ulong iterations = 0;
     weights = WeightVector(training_set[0].first.size() + 1);
-    this->initialization_function(&weights);
+    this->initialization_function(&weights, 0);
     while (!fitting_function(&weights, this,
                              transform_training_data(training_set),
                              learning_rate, epochs, iterations)) {
@@ -87,7 +87,7 @@ public:
       uint thread_id = omp_get_thread_num();
       bool failed = false;
       auto training_weights = weights;
-      this->initialization_function(&training_weights);
+      this->initialization_function(&training_weights, omp_get_thread_num());
       while (!fitting_function(
                  &training_weights, this, transform_training_data(training_set),
                  learning_rate, epochs, thread_iterations[thread_id]) &&
@@ -111,8 +111,9 @@ public:
     return std::pair<bool, ulong>(trained, iterations);
   }
 
-  std::vector<int> predict(const std::vector<WeightVector> &input) {
-    std::vector<int> results;
+  std::vector<double> predict(const std::vector<WeightVector> &input,
+                              bool round_result = true) {
+    std::vector<double> results;
     results.reserve(input.size());
     auto input_pair_it = input.cbegin();
 
@@ -127,7 +128,11 @@ public:
       WeightVector input = WeightVector(input_pair_it->size() + 1);
       input << 1, *input_pair_it++;
       double weighted_sum = input.dot(this->weights.transpose());
-      results.push_back(round(activation_function(weighted_sum)));
+      double activation_result = activation_function(weighted_sum);
+      if (round_result) {
+        activation_result = round(activation_result);
+      }
+      results.push_back(activation_result);
     }
     return results;
   }
