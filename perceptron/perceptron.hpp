@@ -20,7 +20,7 @@ public:
   using fit_fun = bool (*)(WeightVector *weights, Perceptron *perceptron,
                            const transformed_training_data &training_set,
                            const double &learning_rate, const ulong &epochs,
-                           ulong &iterations);
+                           ulong &iterations, const double &epsilon);
 
   Perceptron(init_fun init, active_fun active, fit_fun fit)
       : initialization_function(init), activation_function(active),
@@ -56,13 +56,14 @@ public:
 
   std::pair<bool, ulong> train(const training_data &training_set,
                                const ulong &epochs = 250,
-                               const double &learning_rate = 0.1) {
+                               const double &learning_rate = 0.1,
+                               const double &epsilon = 0.2) {
     ulong iterations = 0;
     weights = WeightVector(training_set[0].first.size() + 1);
     this->initialization_function(&weights, 0);
     while (!fitting_function(&weights, this,
                              transform_training_data(training_set),
-                             learning_rate, epochs, iterations)) {
+                             learning_rate, epochs, iterations, epsilon)) {
       if (++iterations != ULONG_MAX && epochs == iterations && epochs != 0) {
         // Training failed, not enough epochs?
         // If epochs = 0, never stop until weights found
@@ -76,7 +77,8 @@ public:
   // per each available thread
   std::pair<bool, ulong> train_parallel(const training_data &training_set,
                                         const ulong &epochs = 250,
-                                        const double &learning_rate = 0.1) {
+                                        const double &learning_rate = 0.1,
+                                        const double &epsilon = 0.2) {
     ulong iterations = 0;
     weights = WeightVector(training_set[0].first.size() + 1);
     bool trained = false;
@@ -88,9 +90,10 @@ public:
       bool failed = false;
       auto training_weights = weights;
       this->initialization_function(&training_weights, omp_get_thread_num());
-      while (!fitting_function(
-                 &training_weights, this, transform_training_data(training_set),
-                 learning_rate, epochs, thread_iterations[thread_id]) &&
+      while (!fitting_function(&training_weights, this,
+                               transform_training_data(training_set),
+                               learning_rate, epochs,
+                               thread_iterations[thread_id], epsilon) &&
              !trained) {
         if (++thread_iterations[thread_id] != ULONG_MAX &&
             epochs == thread_iterations[thread_id] && epochs != 0) {
