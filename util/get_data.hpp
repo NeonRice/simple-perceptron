@@ -3,10 +3,9 @@
 #include "Eigen/Dense"
 #include <iostream>
 #include <vector>
+#include "types.hpp"
 
 namespace util {
-typedef std::vector<std::pair<Eigen::Matrix<double, 1, Eigen::Dynamic>, int>>
-    training_data;
 
 std::vector<std::string> tokenize(const std::string &str,
                                   const char &delim = ',') {

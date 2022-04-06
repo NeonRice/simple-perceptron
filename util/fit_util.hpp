@@ -1,10 +1,14 @@
-#include <vector>
-#include <stdexcept>
-#include <iostream>
-#include <cmath>
+#pragma once
 
-bool almost_equal(const std::vector<double> &a, const std::vector<int> &b,
-                  const double &accuracy = 0.2) {
+#include <cmath>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+
+namespace util {
+
+double calculate_error(const std::vector<double> &a,
+                       const std::vector<int> &b) {
   if (a.size() != b.size()) {
     throw std::invalid_argument("Training set pairs must be of equal size");
   }
@@ -12,9 +16,13 @@ bool almost_equal(const std::vector<double> &a, const std::vector<int> &b,
   for (int i = 0; i < a.size(); ++i) {
     difference_sum += pow(b[i] - a[i], 2);
   }
-  auto error = 0.5 * difference_sum;
-  if (error > accuracy) {
-    std::cout << error << std::endl;
+
+  return 0.5 * difference_sum;
+}
+
+bool almost_equal(const std::vector<double> &a, const std::vector<int> &b,
+                  const double &accuracy = 0.2) {
+  if (calculate_error(a, b) > accuracy) {
     return false;
   }
 
@@ -33,3 +41,5 @@ bool almost_equal_epsilon(std::vector<double> a, std::vector<int> b,
   }
   return true;
 }
+
+} // namespace util

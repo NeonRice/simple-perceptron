@@ -64,11 +64,12 @@ public:
     while (!fitting_function(&weights, this,
                              transform_training_data(training_set),
                              learning_rate, epochs, iterations, epsilon)) {
-      if (++iterations != ULONG_MAX && epochs == iterations && epochs != 0) {
+      if (iterations == ULONG_MAX || epochs == iterations && epochs != 0) {
         // Training failed, not enough epochs?
         // If epochs = 0, never stop until weights found
         return std::pair<bool, ulong>(false, iterations);
       }
+      ++iterations;
     }
     return std::pair<bool, ulong>(true, iterations);
   }
@@ -95,12 +96,14 @@ public:
                                learning_rate, epochs,
                                thread_iterations[thread_id], epsilon) &&
              !trained) {
-        if (++thread_iterations[thread_id] != ULONG_MAX &&
+        if (thread_iterations[thread_id] != ULONG_MAX ||
             epochs == thread_iterations[thread_id] && epochs != 0) {
           // Training failed, not enough epochs?
           // If epochs = 0, never stop until weights found
           failed = true;
+          break;
         }
+        ++thread_iterations[thread_id];
       }
       if (!failed) {
         trained = true;
