@@ -63,10 +63,9 @@ bool adaline_fit(Perceptron::WeightVector *weights, Perceptron *perceptron,
       *weights_it += learning_rate * difference * input_value;
     }
     *res_it = perceptron->predict({*input_it}, false)[0];
-    // TODO: Not sure if this helps, or hurts. Did not do an analysis
-    // if (!almost_equal({*res_it}, {*actual_it}, epsilon)) {
-    //   continue;
-    // }
+    if (!almost_equal({*res_it}, {*actual_it}, epsilon)) {
+      continue;
+    }
 
     ++input_it;
     ++actual_it;
