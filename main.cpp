@@ -11,10 +11,6 @@
 
 int main(int argc, char **argv) {
   std::istream *stream;
-  argc = 2;
-  argv[1] = "../versicolor0-virginica1-s0.data";
-  // argv[1] = "../setosa0-other1-s2.data";
-  // argv[1] = "../versicolor0-virginica1-s2.data";
   if (argc == 2) {
     // File name provided
     stream = new std::ifstream(argv[1]);
